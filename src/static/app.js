@@ -554,19 +554,19 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="share-buttons">
         <span class="share-label">Share:</span>
-        <button class="share-button facebook-share tooltip" data-activity="${name}" data-description="${details.description.replace(/"/g, '&quot;')}" data-schedule="${formattedSchedule.replace(/"/g, '&quot;')}" aria-label="Share on Facebook">
+        <button class="share-button facebook-share tooltip" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" aria-label="Share on Facebook">
           📘
           <span class="tooltip-text">Share on Facebook</span>
         </button>
-        <button class="share-button twitter-share tooltip" data-activity="${name}" data-description="${details.description.replace(/"/g, '&quot;')}" data-schedule="${formattedSchedule.replace(/"/g, '&quot;')}" aria-label="Share on Twitter">
+        <button class="share-button twitter-share tooltip" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" aria-label="Share on Twitter">
           🐦
           <span class="tooltip-text">Share on Twitter</span>
         </button>
-        <button class="share-button linkedin-share tooltip" data-activity="${name}" data-description="${details.description.replace(/"/g, '&quot;')}" data-schedule="${formattedSchedule.replace(/"/g, '&quot;')}" aria-label="Share on LinkedIn">
+        <button class="share-button linkedin-share tooltip" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" aria-label="Share on LinkedIn">
           💼
           <span class="tooltip-text">Share on LinkedIn</span>
         </button>
-        <button class="share-button email-share tooltip" data-activity="${name}" data-description="${details.description.replace(/"/g, '&quot;')}" data-schedule="${formattedSchedule.replace(/"/g, '&quot;')}" aria-label="Share via Email">
+        <button class="share-button email-share tooltip" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" aria-label="Share via Email">
           ✉️
           <span class="tooltip-text">Share via Email</span>
         </button>
@@ -777,6 +777,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Helper function to escape HTML special characters
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   // Handle social sharing
   function handleShare(event) {
     event.preventDefault();
@@ -786,7 +793,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const schedule = button.dataset.schedule;
 
     // Build the share text
-    const pageUrl = window.location.href.split('?')[0];
+    const pageUrl = window.location.origin + window.location.pathname;
     const shareText = `Check out ${activityName} at Mergington High School! ${description} Schedule: ${schedule}`;
     const shareTitle = `${activityName} - Mergington High School`;
 
@@ -794,20 +801,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (button.classList.contains('facebook-share')) {
       const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`;
       window.open(facebookUrl, '_blank', 'width=600,height=400');
+      showMessage(`Sharing ${activityName}...`, 'info');
     } else if (button.classList.contains('twitter-share')) {
       const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
       window.open(twitterUrl, '_blank', 'width=600,height=400');
+      showMessage(`Sharing ${activityName}...`, 'info');
     } else if (button.classList.contains('linkedin-share')) {
       const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(pageUrl)}`;
       window.open(linkedinUrl, '_blank', 'width=600,height=400');
+      showMessage(`Sharing ${activityName}...`, 'info');
     } else if (button.classList.contains('email-share')) {
       const subject = encodeURIComponent(shareTitle);
       const body = encodeURIComponent(`${shareText}\n\nView all activities at: ${pageUrl}`);
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+      // Use anchor element to prevent navigation
+      const anchor = document.createElement('a');
+      anchor.href = mailtoLink;
+      anchor.click();
     }
-
-    // Show confirmation message
-    showMessage(`Sharing ${activityName}...`, 'info');
   }
 
   // Handle unregistration with confirmation
