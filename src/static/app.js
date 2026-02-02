@@ -863,32 +863,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dark mode toggle functionality
   const darkModeToggle = document.getElementById("dark-mode-toggle");
-  const themeIcon = darkModeToggle.querySelector(".theme-icon");
-  const themeText = darkModeToggle.querySelector("span:not(.theme-icon)");
+  
+  // Only initialize dark mode if the toggle button exists
+  if (darkModeToggle) {
+    const themeIcon = darkModeToggle.querySelector(".theme-icon");
+    const themeText = darkModeToggle.querySelector("span:not(.theme-icon)");
 
-  // Check for saved theme preference or default to light mode
-  const currentTheme = localStorage.getItem("theme") || "light";
-  if (currentTheme === "dark") {
-    document.body.classList.add("dark-mode");
-    themeIcon.textContent = "☀️";
-    themeText.textContent = "Light Mode";
-  }
-
-  // Toggle dark mode
-  darkModeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    
-    // Update button appearance and save preference
-    if (document.body.classList.contains("dark-mode")) {
+    // Check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem("theme") || "light";
+    if (currentTheme === "dark") {
+      document.body.classList.add("dark-mode");
       themeIcon.textContent = "☀️";
       themeText.textContent = "Light Mode";
-      localStorage.setItem("theme", "dark");
-    } else {
-      themeIcon.textContent = "🌙";
-      themeText.textContent = "Dark Mode";
-      localStorage.setItem("theme", "light");
     }
-  });
+
+    // Toggle dark mode
+    darkModeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      
+      // Update button appearance and save preference
+      if (document.body.classList.contains("dark-mode")) {
+        themeIcon.textContent = "☀️";
+        themeText.textContent = "Light Mode";
+        localStorage.setItem("theme", "dark");
+      } else {
+        themeIcon.textContent = "🌙";
+        themeText.textContent = "Dark Mode";
+        localStorage.setItem("theme", "light");
+      }
+    });
+  }
 
   // Initialize app
   checkAuthentication();
